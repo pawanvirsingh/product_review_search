@@ -1,1 +1,112 @@
-{% extends "base.html" %}
+<head>
+  <meta name="viewport" content="width=device-width"/>
+  <style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: left;
+      padding: 8px;
+    }
+
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+  </style>
+  <script type="text/javascript"
+          src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
+  </script>
+  <script type="text/javascript">
+      function search_review(url) {
+          if (!url) {
+
+              if ($('input[name="next_url"]').val()) {
+                  url = $('input[name="next_url"]').val()
+              }
+              else{
+                  alert("No Data Found")
+              }
+          }
+          $.ajax(url, {
+              beforeSend: function () {
+
+                  $("#loader").show();
+              },
+
+              dataType: 'json',
+              timeout: 500000,
+              success: function (data, status, xhr) {
+
+                  $('input[name="next_url"]').val(data.next);
+                  $('#result_table tr').remove();
+                  $('#result_table').append('<tr>\n' +
+                      '    <th>ProductId</th>\n' +
+                      '    <th>UserId</th>\n' +
+                      '    <th>Profile Name</th>\n' +
+                      '    <th>HelpFulNess</th>\n' +
+                      '    <th>Score</th>\n' +
+                      '    <th>Time</th>\n' +
+                      '    <th>Summary</th>\n' +
+                      '    <th>Text</th>\n' +
+                      '  </tr>');
+                  data.results.forEach(product => $('#result_table').append('<tr>' +
+                      '<td>' + product.product_id + '</td>' +
+                      '<td>' + product.user_id + '</td>' +
+                      '<td>' + product.profile_name + '</td>' +
+                      '<td>' + product.helpfulness + '</td>' +
+                      '<td>' + product.score + '</td>' +
+                      '<td>' + product.time + '</td>' +
+                      '<td>' + product.summary + '</td>' +
+                      '<td>' + product.text.slice(0, 100) + '</td>' +
+                      '</tr>')
+                  );
+              },
+              complete: function (data) {
+                  // Hide image container
+                  $("#loader").hide();
+              },
+              error: function (jqXhr, textStatus, errorMessage) { // error callback
+                  $('p').append('Error: ' + errorMessage);
+              }
+          });
+      }
+
+      $(document).ready(function () {
+          $('#search').click(function () {
+              search_review('http://localhost:8000/api/review-search/?query=' + $('#query').val())
+          });
+
+
+      });
+
+  </script>
+</head>
+<body>
+<h1> Searching the Review
+</h1>
+<input type="text" id="query" placeholder="Search for review">
+<input type="button" id="search" value="Search"/>
+<div>
+
+  <input type="hidden" value="" name="next_url"/>
+
+  <h3> Results </h3>
+  <div id='loader' style='display: none;'>
+    <img src='https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif' width='50px' height='50px'>
+  </div>
+
+  <button onclick="search_review('')"> Next</button>
+  <table id="result_table"></table>
+
+  <p>
+      {#          <button onclick=search_review()> Next </button>#}
+
+  </p>
+</div>
+
+
+</body>
