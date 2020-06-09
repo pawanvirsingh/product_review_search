@@ -41,3 +41,5 @@ RUN chmod +x /start-flower
 WORKDIR /app
 
 ENTRYPOINT ["/entrypoint"]
+
+COPY ./data /data
