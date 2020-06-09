@@ -24,7 +24,7 @@ Setup
 * for loading the foods.txt data in database need to run this management command :
         docker-compose -f local.yml run django python manage.py load_review_data
 
-    when not using docker you can pass the file path and chunk_size(bulk_createtion of records at a time)
+    when not using docker you can pass the file path and chunk_size(bulk_creation of records at a time)
        python manage.py load_review_data <file_path> <chunk_size>
 
 
